@@ -36,4 +36,8 @@ export class YandexService {
     );
     this.iamToken = data.iamToken;
   }
+  async onModuleInit() {
+    await this.getToken();
+    console.log(this.iamToken);
+  }
 }
