@@ -1,10 +1,15 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { YandexModule } from './yandex/yandex.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    YandexModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
