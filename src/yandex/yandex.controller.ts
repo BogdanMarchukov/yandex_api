@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { YandexService } from './yandex.service';
 
-@Controller('yandex')
+@Controller()
 export class YandexController {
   constructor(private readonly yandexService: YandexService) {}
   @MessagePattern('translate')
