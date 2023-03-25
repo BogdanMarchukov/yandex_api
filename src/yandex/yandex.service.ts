@@ -9,6 +9,11 @@ interface IamToken {
   iamToken: string;
   expiresAt: string;
 }
+
+interface Translation {
+  text: string;
+  detectedLanguageCode: string;
+}
 @Injectable()
 export class YandexService {
   constructor(
@@ -19,6 +24,8 @@ export class YandexService {
   private readonly tokenUrl = this.configService.get<string>(
     'GER_IAM_TOKEN_URL_YANDEX',
   );
+  private readonly folderId =
+    this.configService.get<string>('FOLDER_ID_YANDEX');
   private readonly oAuthYandexToken =
     this.configService.get<string>('OAUTH_TOKEN_YANDEX');
   @Cron('* * 1 * * *')
@@ -38,5 +45,56 @@ export class YandexService {
   }
   async onModuleInit() {
     await this.getToken();
+  }
+
+  async detectLanguage(text: string) {
+    const { data } = await firstValueFrom(
+      this.httpService
+        .post<{ languageCode: string }>(
+          'https://translate.api.cloud.yandex.net/translate/v2/detect',
+          {
+            text,
+            folderId: this.folderId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.iamToken}`,
+              'Content-Type': 'application/json',
+            },
+          },
+        )
+        .pipe(
+          catchError((error: AxiosError) => {
+            throw error;
+          }),
+        ),
+    );
+    return data;
+  }
+
+  async translate(text: string, targetLanguageCode: string) {
+    const { data } = await firstValueFrom(
+      this.httpService
+        .post<Translation[]>(
+          'https://translate.api.cloud.yandex.net/translate/v2/translate',
+          {
+            texts: [text],
+            targetLanguageCode,
+            folderId: this.folderId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.iamToken}`,
+              'Content-Type': 'application/json',
+            },
+          },
+        )
+        .pipe(
+          catchError((error: AxiosError) => {
+            throw error;
+          }),
+        ),
+    );
+    return data;
   }
 }

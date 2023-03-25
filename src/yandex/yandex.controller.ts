@@ -1,16 +1,12 @@
 import { Controller } from '@nestjs/common';
-import {
-  Ctx,
-  MessagePattern,
-  Payload,
-  RmqContext,
-} from '@nestjs/microservices';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import { YandexService } from './yandex.service';
 
 @Controller('yandex')
 export class YandexController {
-  @MessagePattern('notifications')
-  getNotifications(@Payload() data: string, @Ctx() context: RmqContext) {
-    console.log(`data: ${data}`);
-    return 'test-test';
+  constructor(private readonly yandexService: YandexService) {}
+  @MessagePattern('translate')
+  async getNotifications(@Payload() text: string) {
+    return JSON.stringify(await this.yandexService.translate(text, 'en'));
   }
 }
