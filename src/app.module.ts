@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { YandexModule } from './yandex/yandex.module';
 import { ConfigModule } from '@nestjs/config';
+import { TranslatorModule } from './modules/translator/translator.module';
+import { YandexModule } from './modules/yandex/yandex.module';
 
 @Module({
   imports: [
@@ -8,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    TranslatorModule,
   ],
   controllers: [],
   providers: [],
